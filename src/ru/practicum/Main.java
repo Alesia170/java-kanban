@@ -1,23 +1,28 @@
+package ru.practicum;
+
+import ru.practicum.manager.TaskManager;
+import ru.practicum.tasks.*;
+
 public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = new TaskManager();
 
-        Task task1 = new Task("Купить продукты", "Сделать покупки в магазине", Status.NEW);
+        Task task1 = new Task("Купить продукты", "Сделать покупки в магазине");
         taskManager.addTask(task1);
-        Task task2 = new Task("Вымыть машину", "Помыть салон", Status.NEW);
+        Task task2 = new Task("Вымыть машину", "Помыть салон");
         taskManager.addTask(task2);
 
         Epic epic1 = new Epic("Переезд", "Организовать переезд в новую квартиру");
         taskManager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Упаковать вещи", "Собрать коробки", Status.NEW, epic1.getId());
+        Subtask subtask1 = new Subtask("Упаковать вещи", "Собрать коробки", epic1.getId());
         taskManager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Нанять грузчиков", "Заключить договор", Status.NEW, epic1.getId());
+        Subtask subtask2 = new Subtask("Нанять грузчиков", "Заключить договор", epic1.getId());
         taskManager.addSubtask(subtask2);
 
         Epic epic2 = new Epic("Отпуск", "Подготовка к поездке");
         taskManager.addEpic(epic2);
-        Subtask subtask3 = new Subtask("Купить билеты", "Авиабилеты туда-обратно", Status.NEW, epic2.getId());
+        Subtask subtask3 = new Subtask("Купить билеты", "Авиабилеты туда-обратно", epic2.getId());
         taskManager.addSubtask(subtask3);
 
         System.out.println("Список всех задач");

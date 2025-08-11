@@ -1,15 +1,24 @@
+package ru.practicum.tasks;
+
 import java.util.Objects;
 
 public class Task {
+    private int id;
     private String name;
     private String description;
-    private int id;
-    private Status status;
+    private Status status = Status.NEW;
 
-    public Task (String name, String description, Status status) {
+    public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -28,12 +37,6 @@ public class Task {
         this.description = description;
     }
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public Status getStatus() {
         return status;
     }
@@ -41,7 +44,6 @@ public class Task {
     public void setStatus(Status status) {
         this.status = status;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -55,8 +57,9 @@ public class Task {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
     @Override
-    public String toString() {  // Добавим для удобства отладки
+    public String toString() {
         return "Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
