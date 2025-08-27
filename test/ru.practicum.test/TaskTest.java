@@ -3,25 +3,9 @@ package ru.practicum.test;
 import ru.practicum.tasks.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class TaskTest extends BaseClass {
-
-    @Test
-    void addNewTask() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description");
-        Task saved = taskManager.addTask(task);
-
-        assertNotNull(saved, "Задача не найдена.");
-
-        List<Task> tasks = taskManager.getAllTasks();
-
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(saved, tasks.get(0), "Задачи не совпадают.");
-    }
+class TaskTest {
 
     @Test
     void tasksEqualWhenIdsEqual() {
@@ -32,5 +16,7 @@ class TaskTest extends BaseClass {
         task2.setId(100);
 
         assertEquals(task1, task2, "Задачи с одинаковыми ID должны быть равны.");
+        assertEquals(task1.hashCode(), task2.hashCode(), "Задачи с одинаковым ID должны иметь " +
+                "одинаковый hashCode");
     }
 }

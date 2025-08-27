@@ -19,14 +19,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task addTask(Task task) {
-        task.setId(generateId());
-        tasks.put(task.getId(), task);
-        return task;
+        Task copyTask = new Task(task.getName(), task.getDescription());
+        copyTask.setId(generateId());
+        tasks.put(copyTask.getId(), copyTask);
+        return copyTask;
     }
 
     @Override
     public Task getTaskById(int id) {
-        return addHistory(tasks.get(id));
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
@@ -61,7 +64,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicById(int id) {
-        return addHistory(epics.get(id));
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
@@ -97,24 +102,26 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask addSubtask(Subtask subtask) {
+    public int addSubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
             System.out.println("Эпик с id = " + epicId + " не найден. Подзадача не добавлена.");
-            return subtask;
+            return 0;
         }
         int id = generateId();
         subtask.setId(id);
         subtasks.put(id, subtask);
         epic.addSubtaskId(id);
         updateEpicStatus(epicId);
-        return subtask;
+        return id;
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
-        return addHistory(subtasks.get(id));
+        Subtask subtask = subtasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     @Override
@@ -170,13 +177,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
-    }
-
-    private <T extends Task> T addHistory(T task) {
-        if (task != null) {
-            historyManager.add(task);
-        }
-        return task;
     }
 
     private int generateId() {

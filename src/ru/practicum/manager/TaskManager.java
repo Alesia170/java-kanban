@@ -32,7 +32,7 @@ public interface TaskManager {
 
     void removeAllEpics();
 
-    Subtask addSubtask(Subtask subtask);
+    int addSubtask(Subtask subtask);
 
     Subtask getSubtaskById(int id);
 

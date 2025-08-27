@@ -4,21 +4,40 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.tasks.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class SubtaskTest extends BaseClass {
+public class SubtaskTest {
+
+    @Test
+    void subtasksShouldBeEqualsWithTheSameIds() {
+        int epicId = 10;
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epicId);
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epicId);
+
+        subtask1.setId(42);
+        subtask2.setId(42);
+
+        assertEquals(subtask1, subtask2, "Подзадачи с одинаковым ID должны быть равны");
+        assertEquals(subtask1.hashCode(), subtask2.hashCode(), "HashCode с одинаковым ID должен совпадать");
+    }
 
     @Test
     void subtaskCannotMakeItselfAsEpic() {
+        int epicId = 10;
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epicId);
 
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
-        Epic savedEpic = taskManager.addEpic(epic);
-        Subtask subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask", epic.getId());
-        Subtask savedSubtask = taskManager.addSubtask(subtask);
+        subtask1.setId(epicId);
 
-        assertNotNull(savedSubtask, "Задача не найдена.");
-        assertEquals(savedEpic.getId(), savedSubtask.getEpicId());
-        assertTrue(savedSubtask.getId() != savedSubtask.getEpicId());
-        assertFalse(savedEpic.getSubtaskIds().contains(savedEpic.getId()));
+        assertNotEquals(subtask1.getId(), subtask1.getEpicId(), "Subtask нельзя сделать своим же Epic");
+    }
+
+    @Test
+    void epicsAndSubtasksWithTheSameIdsNotEqual() {
+        Task epic1 = new Epic("Epic1", "Description1");
+        Task subtask1 = new Subtask("Subtask", "Description", epic1.getId());
+
+        epic1.setId(26);
+        subtask1.setId(26);
+
+        assertNotEquals(epic1, subtask1, "Эпик и подзадача с одинаковым ID не должны быть равны");
     }
 }

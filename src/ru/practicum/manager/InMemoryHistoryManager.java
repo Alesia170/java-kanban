@@ -15,11 +15,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void add(Task task) {
+    public Task add(Task task) {
         if (task != null) {
             history.add(task);
             checkLimitHistory();
         }
+        return task;
     }
 
     private void checkLimitHistory() {
