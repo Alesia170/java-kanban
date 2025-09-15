@@ -28,6 +28,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B package --file java-kanban/pom.xml
+      - name: Build and test with Maven
+        run: mvn -B verify --file java-kanban/pom.xml
 
