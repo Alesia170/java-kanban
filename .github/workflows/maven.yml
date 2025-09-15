@@ -10,9 +10,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "sprint_6-solution" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "sprint_6-solution" ]
 
 jobs:
   build:
@@ -29,7 +29,8 @@ jobs:
           cache: maven
 
       - name: Build and test with Maven
-        run: mvn -B verify --file java-kanban/pom.xml
+        run: mvn -B verify --file pom.xml
+
 
 
 
