@@ -60,14 +60,15 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public Node linkLast(Task task) {
-        final Node oldTail = tail;
-        final Node newNode = new Node(oldTail, task, null);
-        tail = newNode;
-        if (oldTail == null) {
+        final Node newNode = new Node(tail, task, null);
+
+        if (tail == null) {
             head = newNode;
         } else {
-            oldTail.next = newNode;
+            tail.next = newNode;
         }
+
+        tail = newNode;
         return newNode;
     }
 
