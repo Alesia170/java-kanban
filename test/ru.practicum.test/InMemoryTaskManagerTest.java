@@ -203,4 +203,68 @@ class InMemoryTaskManagerTest extends BaseTest {
         assertEquals("Changed name", result.getName());
         assertEquals("Changed description", result.getDescription());
     }
+
+    @Test
+    void shouldRemoveNotActualSubtasks() {
+        int subtaskId = subtask1.getId();
+        taskManager.removeSubtask(subtaskId);
+
+        assertFalse(epic1.getSubtaskIds().contains(subtaskId));
+    }
+
+    @Test
+    void shouldRemoveEpicAndAllItsSubtasks() {
+        int epicId = epic1.getId();
+        int subtaskId1 = subtask1.getId();
+        int subtaskId2 = subtask2.getId();
+
+        taskManager.removeEpic(epicId);
+
+        assertNull(taskManager.getEpicById(epicId), "Эпик должен быть удален");
+        assertNull(taskManager.getSubtaskById(subtaskId1), "1 Подзадача эпика должна быть удалена");
+        assertNull(taskManager.getSubtaskById(subtaskId2), "2 Подзадача эпика должна быть удалена");
+    }
+
+    @Test
+    void shouldEpicStayTheSameAfterChangingManager() {
+        Epic original = new Epic("Name", "Description");
+        Epic saved = taskManager.addEpic(original);
+
+        assertEquals("Name", saved.getName());
+        assertEquals("Description", saved.getDescription());
+        assertEquals(NEW, saved.getStatus());
+        assertTrue(saved.getId() > 0);
+
+        original.setName("Change Name");
+        original.setDescription("Change Description");
+        original.setStatus(DONE);
+
+        Epic fromManager = taskManager.getEpicById(saved.getId());
+
+        assertEquals("Name", fromManager.getName());
+        assertEquals("Description", fromManager.getDescription());
+        assertEquals(NEW, fromManager.getStatus());
+    }
+
+    @Test
+    void shouldSubtaskStayTheSameAfterChangingManager() {
+        Subtask original = new Subtask("Name", "Description", epic1.getId());
+        int id = taskManager.addSubtask(original);
+        Subtask saved = taskManager.getSubtaskById(id);
+
+        assertEquals("Name", saved.getName());
+        assertEquals("Description", saved.getDescription());
+        assertEquals(NEW, saved.getStatus());
+        assertTrue(saved.getId() > 0);
+
+        original.setName("Change Name");
+        original.setDescription("Change Description");
+        original.setStatus(DONE);
+
+        Subtask fromManager = taskManager.getSubtaskById(saved.getId());
+
+        assertEquals("Name", fromManager.getName());
+        assertEquals("Description", fromManager.getDescription());
+        assertEquals(NEW, fromManager.getStatus());
+    }
 }
