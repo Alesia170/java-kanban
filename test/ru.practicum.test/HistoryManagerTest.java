@@ -39,17 +39,77 @@ public class HistoryManagerTest {
     }
 
     @Test
-    void shouldLimitHistoryToTenTasks() {
-        for (int i = 0; i <= 13; i++) {
-            Task task = new Task("Task " + i, "Description " + i);
-            task.setId(i);
-            historyManager.add(task);
-        }
+    void shouldMoveTaskToEndIfCalledAgain() {
+        Task task1 = new Task("Task1", "Description1");
+        task1.setId(1);
+        Task task2 = new Task("Task2", "Description2");
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task1);
 
         List<Task> history = historyManager.getHistory();
 
-        assertEquals(10, history.size(), "История должна содержать 10 задач");
-        assertEquals("Task 4", history.get(0).getName(), "Первой задачей должна быть 4 задача");
-        assertEquals("Task 13", history.get(9).getName(), "Последней задаче должна быть 13 задача");
+        assertEquals(2, history.size(), "История должна содержать 2 задачи");
+        assertEquals(task2, history.get(0), "Вторая задача должна быть первой");
+        assertEquals(task1, history.get(1), "Первая задача должна быть второй");
+    }
+
+    @Test
+    void shouldRemoveTaskById() {
+        Task task1 = new Task("Task1", "Description1");
+        task1.setId(1);
+        Task task2 = new Task("Task2", "Description2");
+        task2.setId(2);
+        Task task3 = new Task("Task3", "Description3");
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(2, history.size(), "История должна содержать 2 задачи");
+        assertEquals(List.of(task1, task3), history, "Должны остаться 1 и 3 задачи");
+    }
+
+    @Test
+    void shouldRemoveHeadAndTailCorrectly() {
+        Task task1 = new Task("Task1", "Description1");
+        task1.setId(1);
+        Task task2 = new Task("Task2", "Description2");
+        task2.setId(2);
+        Task task3 = new Task("Task3", "Description3");
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(1);
+        List<Task> removeHead = historyManager.getHistory();
+        assertEquals(List.of(task2, task3), removeHead, "После удления первой задачи должны остаться 2 и 3 задачи");
+
+        historyManager.remove(3);
+        List<Task> removeTail = historyManager.getHistory();
+        assertEquals(List.of(task2), removeTail, "Должна остаться только 2 задача");
+    }
+
+    @Test
+    void shouldDoNotRemoveIfIdDoesExist() {
+        Task task1 = new Task("Task1", "Description1");
+        task1.setId(1);
+        historyManager.add(task1);
+
+        historyManager.remove(16);
+
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(1, history.size(), "Должна быть 1 задача");
+        assertEquals(task1, history.get(0), "Задача 1 должна быть в истории");
     }
 }

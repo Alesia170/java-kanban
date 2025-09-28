@@ -8,26 +8,26 @@ public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Купить продукты", "Сделать покупки в магазине");
-        taskManager.addTask(task1);
-        Task task2 = new Task("Вымыть машину", "Помыть салон");
-        taskManager.addTask(task2);
+        Task task1 = taskManager.addTask(new Task("Купить продукты", "Сделать покупки в магазине"));
+        Task task2 = taskManager.addTask(new Task("Вымыть машину", "Помыть салон"));
 
-        Epic epic1 = new Epic("Переезд", "Организовать переезд в новую квартиру");
-        taskManager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Упаковать вещи", "Собрать коробки", epic1.getId());
-        taskManager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Нанять грузчиков", "Заключить договор", epic1.getId());
-        taskManager.addSubtask(subtask2);
+        Epic epic1 = taskManager.addEpic(new Epic("Переезд", "Организовать переезд в новую квартиру"));
+        int subtaskId1 = taskManager.addSubtask(new Subtask("Упаковать вещи", "Собрать коробки", epic1.getId()));
+        Subtask subtask1 = taskManager.getSubtaskById(subtaskId1);
+        int subtaskId2 = taskManager.addSubtask(new Subtask("Нанять грузчиков", "Заключить договор", epic1.getId()));
+        Subtask subtask2 = taskManager.getSubtaskById(subtaskId2);
 
-        Epic epic2 = new Epic("Отпуск", "Подготовка к поездке");
-        taskManager.addEpic(epic2);
-        Subtask subtask3 = new Subtask("Купить билеты", "Авиабилеты туда-обратно", epic2.getId());
-        taskManager.addSubtask(subtask3);
+        Epic epic2 = taskManager.addEpic(new Epic("Отпуск", "Подготовка к поездке"));
+        int subtaskId3 = taskManager.addSubtask(new Subtask("Купить билеты", "Авиабилеты туда-обратно", epic2.getId()));
+        Subtask subtask3 = taskManager.getSubtaskById(subtaskId3);
 
         taskManager.getTaskById(task1.getId());
+        taskManager.getEpicById(epic2.getId());
+        taskManager.getSubtaskById(subtask2.getId());
+        taskManager.getTaskById(task2.getId());
         taskManager.getEpicById(epic1.getId());
-        taskManager.getSubtaskById(subtask1.getId());
+        taskManager.getSubtaskById(subtask3.getId());
+        taskManager.getTaskById(task1.getId());
 
         printAllTasks(taskManager);
 
@@ -53,6 +53,10 @@ public class Main {
         System.out.println("Эпики: " + taskManager.getAllEpics());
         System.out.println("Подзадачи: " + taskManager.getAllSubtasks());
 
+        System.out.println("История после удаления:");
+        for (Task task : taskManager.getHistory()) {
+            System.out.println(task);
+        }
     }
 
     private static void printAllTasks(TaskManager manager) {
