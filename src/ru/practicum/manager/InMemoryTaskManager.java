@@ -21,6 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task addTask(Task task) {
         Task copyTask = new Task(task.getName(), task.getDescription());
         copyTask.setId(generateId());
+        copyTask.setStatus(task.getStatus());
         tasks.put(copyTask.getId(), copyTask);
         return copyTask;
     }
@@ -127,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtaskCopy = new Subtask(subtask.getName(), subtask.getDescription(), epicId);
         int id = generateId();
         subtaskCopy.setId(id);
+        subtaskCopy.setStatus(subtask.getStatus());
         subtasks.put(id, subtaskCopy);
         epic.addSubtaskId(id);
         updateEpicStatus(epicId);
