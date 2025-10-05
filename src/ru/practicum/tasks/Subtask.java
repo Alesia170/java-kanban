@@ -18,6 +18,11 @@ public class Subtask extends Task {
     }
 
     @Override
+    public String getEpicIdForFile() {
+        return String.valueOf(epicId);
+    }
+
+    @Override
     public void setId(int id) {
         if (id == this.epicId) {
             return;

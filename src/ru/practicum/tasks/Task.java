@@ -49,6 +49,10 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public String getEpicIdForFile() {
+        return "";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
