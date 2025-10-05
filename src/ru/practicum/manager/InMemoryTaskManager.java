@@ -202,7 +202,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    protected void updateId (int id) {
+    protected void updateId(int id) {
         if (id >= nextId) {
             nextId = id + 1;
         }
