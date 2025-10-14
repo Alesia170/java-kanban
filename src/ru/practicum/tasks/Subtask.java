@@ -13,6 +13,16 @@ public class Subtask extends Task {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
+
+    @Override
+    public String getEpicIdForFile() {
+        return String.valueOf(epicId);
+    }
+
+    @Override
     public void setId(int id) {
         if (id == this.epicId) {
             return;
@@ -24,9 +34,11 @@ public class Subtask extends Task {
     public String toString() {
         return "Subtask{" +
                 "id=" + getId() +
-                ", epicId=" + epicId +
+                ", type=" + getType() +
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +
+                ", description='" + getDescription() + '\'' +
+                ", epicId=" + getEpicId() +
                 '}';
     }
 }
