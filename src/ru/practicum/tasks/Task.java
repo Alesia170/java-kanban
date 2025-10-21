@@ -1,5 +1,7 @@
 package ru.practicum.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,6 +9,8 @@ public class Task {
     private String name;
     private String description;
     private Status status = Status.NEW;
+    Duration duration;
+    LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
@@ -53,6 +57,29 @@ public class Task {
         return "";
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +101,8 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
+                ", duration=" + (duration != null ? duration.toMinutes() + "min" : "null") +
+                ", startTime=" + getStartTime() +
                 '}';
     }
 }
