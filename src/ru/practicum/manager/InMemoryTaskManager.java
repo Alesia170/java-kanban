@@ -326,9 +326,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void addToPrioritized(Task task) {
         prioritizedTasks.remove(task);
-        if (task.getStartTime() != null) {
-            prioritizedTasks.add(task);
-        }
+        prioritizedTasks.add(task);
     }
 
     private boolean isOverLapping(Task task1, Task task2) {

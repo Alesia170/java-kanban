@@ -14,7 +14,7 @@ import static ru.practicum.tasks.Status.DONE;
 import static ru.practicum.tasks.Status.NEW;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    protected TaskManager taskManager;
+    protected T taskManager;
 
     @Test
     void shouldAllStatusSubtasksNew() {
@@ -389,5 +389,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(3, prioritized.size(), "Должно быть добавлено три задачи");
         assertTrue(prioritized.get(0).getStartTime().isBefore(prioritized.get(1).getStartTime()));
         assertTrue(prioritized.get(1).getStartTime().isBefore(prioritized.get(2).getStartTime()));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTasksOverlapInTime() {
+        Task task1 = new Task("Task1", "Description1");
+        task1.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 0));
+        task1.setDuration(Duration.ofMinutes(30));
+        taskManager.addTask(task1);
+
+        Task task2 = new Task("Task2", "Description2");
+        task2.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 10));
+        task2.setDuration(Duration.ofMinutes(30));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> taskManager.addTask(task2),
+                "Должно выбрасываться исключение при пересечении времени");
     }
 }

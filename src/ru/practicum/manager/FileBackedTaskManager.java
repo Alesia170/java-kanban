@@ -47,7 +47,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         manager.updateSubtask(subtask1);
 
         subtask2.setStatus(Status.IN_PROGRESS);
-        subtask2.setStartTime(LocalDateTime.of(2025, 10, 19, 11, 00));
+        subtask2.setStartTime(LocalDateTime.of(2025, 10, 19, 11, 0));
         subtask2.setDuration(Duration.ofMinutes(30));
         manager.updateSubtask(subtask2);
 

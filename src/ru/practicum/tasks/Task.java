@@ -9,8 +9,8 @@ public class Task {
     private String name;
     private String description;
     private Status status = Status.NEW;
-    Duration duration;
-    LocalDateTime startTime;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;

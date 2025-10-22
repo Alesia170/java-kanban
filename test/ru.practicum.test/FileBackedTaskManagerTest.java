@@ -73,13 +73,13 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         int subtaskId1 = taskManager.addSubtask(new Subtask("Name1", "Description1", epic1.getId()));
         Subtask subtask1 = taskManager.getSubtaskById(subtaskId1);
         subtask1.setDuration(Duration.ofMinutes(20));
-        subtask1.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 0));
+        subtask1.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 30));
         taskManager.updateSubtask(subtask1);
 
         int subtaskId2 = taskManager.addSubtask(new Subtask("Name2", "Description2", epic1.getId()));
         Subtask subtask2 = taskManager.getSubtaskById(subtaskId2);
         subtask2.setDuration(Duration.ofMinutes(10));
-        subtask2.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 20));
+        subtask2.setStartTime(LocalDateTime.of(2025, 10, 19, 14, 50));
         taskManager.updateSubtask(subtask2);
 
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(file);
@@ -94,16 +94,16 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         assertEquals(LocalDateTime.of(2025, 10, 19, 14, 30), loadedTask.getEndTime());
 
         assertEquals(Duration.ofMinutes(20), loadedSubtask1.getDuration());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 0), loadedSubtask1.getStartTime());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 20), loadedSubtask1.getEndTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 30), loadedSubtask1.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 50), loadedSubtask1.getEndTime());
 
         assertEquals(Duration.ofMinutes(10), loadedSubtask2.getDuration());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 20), loadedSubtask2.getStartTime());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 30), loadedSubtask2.getEndTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 50), loadedSubtask2.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 15, 0), loadedSubtask2.getEndTime());
 
         assertEquals(Duration.ofMinutes(30), loadedEpic.getDuration());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 0), loadedEpic.getStartTime());
-        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 30), loadedEpic.getEndTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 14, 30), loadedEpic.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 10, 19, 15, 0), loadedEpic.getEndTime());
     }
 
     @Test
