@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -31,15 +33,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         int subtaskId2 = manager.addSubtask(new Subtask("Name2", "Description2", epic1.getId()));
         Subtask subtask2 = manager.getSubtaskById(subtaskId2);
 
-
         task1.setStatus(Status.IN_PROGRESS);
+        task1.setStartTime(LocalDateTime.of(2025, 10, 19, 10, 0));
+        task1.setDuration(Duration.ofMinutes(30));
         manager.updateTask(task1);
 
         task2.setStatus(Status.DONE);
         manager.updateTask(task2);
 
         subtask1.setStatus(Status.IN_PROGRESS);
+        subtask1.setStartTime(LocalDateTime.of(2025, 10, 19, 10, 30));
+        subtask1.setDuration(Duration.ofMinutes(30));
         manager.updateSubtask(subtask1);
+
+        subtask2.setStatus(Status.IN_PROGRESS);
+        subtask2.setStartTime(LocalDateTime.of(2025, 10, 19, 11, 0));
+        subtask2.setDuration(Duration.ofMinutes(30));
+        manager.updateSubtask(subtask2);
 
         System.out.println("До загрузки: " + manager.getAllTasks() + "\n" +
                 manager.getAllEpics() + "\n" + manager.getAllSubtasks());
@@ -166,17 +176,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
 
+            for (Epic epic : manager.epics.values()) {
+                manager.updateEpicTimeAndDuration(epic.getId());
+                manager.updateEpicStatus(epic.getId());
+            }
+
             manager.updateId(maxId);
 
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении файла", e);
+        } catch (RuntimeException e) {
+            throw new ManagerSaveException("Ошибка при чтении файла: некорректный формат данных", e);
         }
         return manager;
     }
 
     private void save() {
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,duration,startTime,epic\n");
 
             for (Task task : getAllTasks()) {
                 writer.write(TaskConverter.taskToString(task) + "\n");
@@ -192,6 +209,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении файла", e);
+        } catch (RuntimeException e) {
+            throw new ManagerSaveException("Ошибка при сохранении файла: некорректный формат данных", e);
         }
     }
 }
