@@ -85,14 +85,15 @@ public class EpicsHandler extends BaseHttpHandler {
         }
 
         int id = epicIdOpt.get();
+        Epic epic = taskManager.getEpicById(id);
 
-        try {
-            Epic epic = taskManager.getEpicById(id);
-            String response = gson.toJson(epic);
-            sendText(exchange, response);
-        } catch (NotFoundException e) {
-            sendNotFound(exchange, e.getMessage());
+        if (epic == null) {
+            sendNotFound(exchange, "Эпик с id=" + id + " не найден");
+            return;
         }
+
+        String response = gson.toJson(epic);
+        sendText(exchange, response);
     }
 
     private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
@@ -104,14 +105,16 @@ public class EpicsHandler extends BaseHttpHandler {
         }
 
         int id = epicIdOpt.get();
+        Epic epic = taskManager.getEpicById(id);
 
-        try {
-            List<Subtask> subtasks = taskManager.getEpicSubtasks(id);
-            String response = gson.toJson(subtasks);
-            sendText(exchange, response);
-        } catch (NotFoundException e) {
-            sendNotFound(exchange, e.getMessage());
+        if (epic == null) {
+            sendNotFound(exchange, "Эпик с id=" + id + " не найден");
+            return;
         }
+
+        List<Subtask> subtasks = taskManager.getEpicSubtasks(id);
+        String response = gson.toJson(subtasks);
+        sendText(exchange, response);
     }
 
     private void handlePostEpic(HttpExchange exchange) throws IOException {
@@ -139,12 +142,15 @@ public class EpicsHandler extends BaseHttpHandler {
             return;
         }
 
-        try {
-            int id = epicIdOpt.get();
-            taskManager.removeEpic(id);
-            sendText(exchange, "Эпик успешно удален");
-        } catch (NotFoundException e) {
-            sendNotFound(exchange, e.getMessage());
+        int id = epicIdOpt.get();
+        Epic epic = taskManager.getEpicById(id);
+
+        if (epic == null) {
+            sendNotFound(exchange, "Эпик с id=" + id + " не найден");
+            return;
         }
+
+        taskManager.removeEpic(id);
+        sendText(exchange, "Эпик успешно удалён");
     }
 }

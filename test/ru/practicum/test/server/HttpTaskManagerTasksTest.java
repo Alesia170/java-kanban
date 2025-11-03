@@ -1,12 +1,7 @@
 package ru.practicum.test.server;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.manager.*;
-import ru.practicum.server.HttpTaskServer;
 import ru.practicum.tasks.*;
 
 import java.io.IOException;
