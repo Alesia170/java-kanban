@@ -85,15 +85,13 @@ public class EpicsHandler extends BaseHttpHandler {
         }
 
         int id = epicIdOpt.get();
-        Epic epic = taskManager.getEpicById(id);
-
-        if (epic == null) {
+        try {
+            Epic epics = taskManager.getEpicById(id);
+            String response = gson.toJson(epics);
+            sendText(exchange, response);
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Эпик с id=" + id + " не найден");
-            return;
         }
-
-        String response = gson.toJson(epic);
-        sendText(exchange, response);
     }
 
     private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
@@ -105,16 +103,13 @@ public class EpicsHandler extends BaseHttpHandler {
         }
 
         int id = epicIdOpt.get();
-        Epic epic = taskManager.getEpicById(id);
-
-        if (epic == null) {
+        try {
+            List<Subtask> subtasks = taskManager.getEpicSubtasks(id);
+            String response = gson.toJson(subtasks);
+            sendText(exchange, response);
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Эпик с id=" + id + " не найден");
-            return;
         }
-
-        List<Subtask> subtasks = taskManager.getEpicSubtasks(id);
-        String response = gson.toJson(subtasks);
-        sendText(exchange, response);
     }
 
     private void handlePostEpic(HttpExchange exchange) throws IOException {
@@ -143,14 +138,12 @@ public class EpicsHandler extends BaseHttpHandler {
         }
 
         int id = epicIdOpt.get();
-        Epic epic = taskManager.getEpicById(id);
 
-        if (epic == null) {
+        try {
+            taskManager.removeEpic(id);
+            sendText(exchange, "Эпик успешно удалён");
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Эпик с id=" + id + " не найден");
-            return;
         }
-
-        taskManager.removeEpic(id);
-        sendText(exchange, "Эпик успешно удалён");
     }
 }

@@ -86,15 +86,15 @@ public class TaskHandler extends BaseHttpHandler {
         }
 
         int id = taskIdOpt.get();
-        Task task = taskManager.getTaskById(id);
 
-        if (task == null) {
+        try {
+            Task task = taskManager.getTaskById(id);
+            String response = gson.toJson(task);
+            sendText(exchange, response);
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Задача с id=" + id + " не найдена");
-            return;
-        }
 
-        String response = gson.toJson(task);
-        sendText(exchange, response);
+        }
     }
 
     private void handlePostTask(HttpExchange exchange) throws IOException {
@@ -125,14 +125,12 @@ public class TaskHandler extends BaseHttpHandler {
         }
 
         int id = taskIdOpt.get();
-        Task task = taskManager.getTaskById(id);
 
-        if (task == null) {
+        try {
+            taskManager.removeTask(id);
+            sendText(exchange, "Задача успешно удалена");
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Задача с id= " + id + " не найдена");
-            return;
         }
-
-        taskManager.removeTask(id);
-        sendText(exchange, "Задача успешно удалена");
     }
 }

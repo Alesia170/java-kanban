@@ -72,9 +72,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTask(int id) {
         Task removed = tasks.remove(id);
-        if (removed != null) {
-            prioritizedTasks.remove(removed);
+        if (removed == null) {
+            throw new NotFoundException("Задача с id=" + id + "не найден");
         }
+        prioritizedTasks.remove(removed);
         historyManager.remove(id);
     }
 
@@ -98,9 +99,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с id=" + id + " не найден");
         }
+        historyManager.add(epic);
         return epic;
     }
 
@@ -179,10 +181,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с id=" + id + " не найдена для удаления");
         }
-
+        historyManager.add(subtask);
         return subtask;
     }
 
@@ -209,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeSubtask(int subtaskId) {
         Subtask subtask = subtasks.remove(subtaskId);
         if (subtask == null) {
-            throw new NotFoundException("Подзадача с id=" + subtaskId + "не найдена для удаления");
+            throw new NotFoundException("Подзадача с id=" + subtaskId + " не найдена для удаления");
         }
         prioritizedTasks.remove(subtask);
         historyManager.remove(subtaskId);
@@ -244,7 +246,7 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            return new ArrayList<>();
+            throw new NotFoundException("Эпик для подзадачи с id=" + epicId + " не найден");
         }
 
         return epic.getSubtaskIds().stream()

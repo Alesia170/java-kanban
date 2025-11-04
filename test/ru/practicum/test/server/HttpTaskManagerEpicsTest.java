@@ -47,38 +47,12 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
 
     @Test
     void shouldGetAllEpics() throws IOException, InterruptedException {
-        Epic epic1 = new Epic("Name1", "Description1");
-        Epic epic2 = new Epic("Name2", "Description2");
-        Epic epic3 = new Epic("Name3", "Description3");
-
-        String epicJson1 = gson.toJson(epic1);
-        String epicJson2 = gson.toJson(epic2);
-        String epicJson3 = gson.toJson(epic3);
+        Epic epic1 = taskManager.addEpic(new Epic("Name1", "Description1"));
+        Epic epic2 = taskManager.addEpic(new Epic("Name2", "Description2"));
+        Epic epic3 = taskManager.addEpic(new Epic("Name3", "Description3"));
 
         HttpClient httpClient = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/epics");
-
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(epicJson1))
-                .build();
-        HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response1.statusCode(), "Первый эпик должен успешно добавляться");
-
-        HttpRequest postEpic2 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(epicJson2))
-                .build();
-        HttpResponse<String> response2 = httpClient.send(postEpic2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response2.statusCode(), "Второй эпик должен успешно добавляться");
-
-
-        HttpRequest postEpic3 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(epicJson3))
-                .build();
-        HttpResponse<String> response3 = httpClient.send(postEpic3, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response3.statusCode(), "Третий эпик должен успешно добавляться");
 
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(url)
@@ -87,12 +61,11 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
 
         HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
-
         Type listType = new TypeToken<List<Epic>>() {
         }.getType();
         List<Epic> epicsFromServer = gson.fromJson(response.body(), listType);
 
+        assertEquals(200, response.statusCode());
         assertNotNull(epicsFromServer, "Список эпиков не должен быть null");
         assertEquals(3, epicsFromServer.size(), "Количество эпиков некорректно");
         assertEquals("Name1", epicsFromServer.get(0).getName());
@@ -103,34 +76,21 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
     @Test
     void shouldGetEpicById() throws IOException, InterruptedException {
         Epic epic1 = taskManager.addEpic(new Epic("Name1", "Description1"));
-
-        String epicJson1 = gson.toJson(epic1);
+        int epicId = epic1.getId();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/epics");
-
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(epicJson1))
-                .build();
-
-        HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response1.statusCode());
-
-        Epic createdEpic = gson.fromJson(response1.body(), Epic.class);
-        int epicId = createdEpic.getId();
-        URI getUrl = URI.create("http://localhost:8080/epics/" + epicId);
+        URI url = URI.create("http://localhost:8080/epics/" + epicId);
 
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(getUrl)
+                .uri(url)
                 .GET()
                 .build();
 
         HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, getResponse.statusCode());
         Epic epicFromServer = gson.fromJson(getResponse.body(), Epic.class);
 
+        assertEquals(200, getResponse.statusCode());
         assertNotNull(epicFromServer, "Эпик не должен быть null");
         assertEquals(epicId, epicFromServer.getId(), "ID должен совпадать");
         assertEquals("Name1", epicFromServer.getName(), "Имя эпика некорректно");
@@ -144,38 +104,9 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
         int subtaskId2 = taskManager.addSubtask(new Subtask("Name2", "Description1", epic1.getId()));
         Subtask subtask2 = taskManager.getSubtaskById(subtaskId2);
 
-        String epicJson1 = gson.toJson(epic1);
-        String subtaskJson1 = gson.toJson(subtask1);
-        String subtaskJson2 = gson.toJson(subtask2);
+        int epicId = epic1.getId();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/epics");
-
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(epicJson1))
-                .build();
-
-        HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response1.statusCode());
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-        HttpRequest request2 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson2))
-                .build();
-
-        HttpResponse<String> response2 = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response2.statusCode());
-
-        Epic createdEpic = gson.fromJson(response1.body(), Epic.class);
-        int epicId = createdEpic.getId();
         URI getUrl = URI.create("http://localhost:8080/epics/" + epicId + "/subtasks");
 
         HttpRequest getRequest = HttpRequest.newBuilder()
@@ -185,12 +116,12 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
 
         HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, getResponse.statusCode());
         Type subtaskListType = new TypeToken<List<Subtask>>() {
         }.getType();
 
         List<Subtask> subtasks = gson.fromJson(getResponse.body(), subtaskListType);
 
+        assertEquals(200, getResponse.statusCode());
         assertNotNull(subtasks, "Список подзадач не должен быть null");
         assertEquals(2, subtasks.size(), "Должно быть две подзадачи");
     }
@@ -198,29 +129,20 @@ public class HttpTaskManagerEpicsTest extends HttpBaseTest {
     @Test
     void shouldEpicDeleteById() throws IOException, InterruptedException {
         Epic epic1 = taskManager.addEpic(new Epic("Name1", "Description1"));
-        String subtaskJson1 = gson.toJson(epic1);
+
+        int id = epic1.getId();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/epics");
+        URI url = URI.create("http://localhost:8080/epics/" + id);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Epic createdEpic = gson.fromJson(response.body(), Epic.class);
-        int epicId = createdEpic.getId();
-        URI getUrl = URI.create("http://localhost:8080/epics/" + epicId);
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(getUrl)
+                .uri(url)
                 .DELETE()
                 .build();
 
-        HttpResponse<String> response2 = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response2.statusCode());
+        assertEquals(200, getResponse.statusCode());
     }
 
     @Test

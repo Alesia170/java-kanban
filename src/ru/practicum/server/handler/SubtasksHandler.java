@@ -77,15 +77,14 @@ public class SubtasksHandler extends BaseHttpHandler {
         }
 
         int id = subtaskIdOpt.get();
-        Subtask subtask = taskManager.getSubtaskById(id);
 
-        if (subtask == null) {
+        try {
+            Subtask subtask = taskManager.getSubtaskById(id);
+            String response = gson.toJson(subtask);
+            sendText(exchange, response);
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Подзадача с id=" + id + " не найдена");
-            return;
         }
-
-        String response = gson.toJson(subtask);
-        sendText(exchange, response);
     }
 
     private void handlePostSubtask(HttpExchange exchange) throws IOException {
@@ -119,14 +118,12 @@ public class SubtasksHandler extends BaseHttpHandler {
         }
 
         int id = subtaskIdOpt.get();
-        Subtask subtask = taskManager.getSubtaskById(id);
 
-        if (subtask == null) {
+        try {
+            taskManager.removeSubtask(id);
+            sendText(exchange, "Подзадача успешно удалена");
+        } catch (NotFoundException e) {
             sendNotFound(exchange, "Подзадача с id=" + id + " не найдена");
-            return;
         }
-
-        taskManager.removeSubtask(id);
-        sendText(exchange, "Подзадача успешно удалена");
     }
 }

@@ -48,7 +48,6 @@ public class HttpTaskManagerSubtasksTest extends HttpBaseTest {
         int subtaskId1 = taskManager.addSubtask(new Subtask("Name1", "Description1", epic1.getId()));
         Subtask subtask1 = taskManager.getSubtaskById(subtaskId1);
         subtask1.setName("ChangingName");
-        taskManager.updateSubtask(subtask1);
 
         String subtaskJson = gson.toJson(subtask1);
 
@@ -77,40 +76,21 @@ public class HttpTaskManagerSubtasksTest extends HttpBaseTest {
         int subtaskId2 = taskManager.addSubtask(new Subtask("Name2", "Description1", epic1.getId()));
         Subtask subtask2 = taskManager.getSubtaskById(subtaskId2);
 
-        String subtaskJson1 = gson.toJson(subtask1);
-        String subtaskJson2 = gson.toJson(subtask2);
-
         HttpClient httpClient = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-        HttpRequest request2 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson2))
-                .build();
-
-        HttpResponse<String> response2 = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response2.statusCode());
 
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
                 .build();
 
-        HttpResponse<String> response3 = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response3.statusCode());
+        HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
         Type listType = new TypeToken<List<Subtask>>() {
         }.getType();
-        List<Subtask> subtasksFromServer = gson.fromJson(response3.body(), listType);
+        List<Subtask> subtasksFromServer = gson.fromJson(getResponse.body(), listType);
 
+        assertEquals(200, getResponse.statusCode());
         assertNotNull(subtasksFromServer, "Список подзадач не должен быть null");
         assertEquals(2, subtasksFromServer.size(), "Количество подзадач некорректно");
         assertEquals("Name1", subtasksFromServer.get(0).getName());
@@ -121,26 +101,11 @@ public class HttpTaskManagerSubtasksTest extends HttpBaseTest {
     void shouldGetSubtaskById() throws IOException, InterruptedException {
         Epic epic1 = taskManager.addEpic(new Epic("Name1", "Description1"));
         int subtaskId1 = taskManager.addSubtask(new Subtask("Name1", "Description1", epic1.getId()));
-        Subtask subtask1 = taskManager.getSubtaskById(subtaskId1);
-
-        String subtaskJson1 = gson.toJson(subtask1);
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/subtasks");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-
-        Subtask createdSubtask = gson.fromJson(response.body(), Subtask.class);
-        int subtaskId = createdSubtask.getId();
-        URI getUrl = URI.create("http://localhost:8080/subtasks/" + subtaskId);
+        URI url = URI.create("http://localhost:8080/subtasks/" + subtaskId1);
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(getUrl)
+                .uri(url)
                 .GET()
                 .build();
 
@@ -170,23 +135,9 @@ public class HttpTaskManagerSubtasksTest extends HttpBaseTest {
     void shouldDeleteTaskById() throws IOException, InterruptedException {
         Epic epic1 = taskManager.addEpic(new Epic("Name1", "Description1"));
         int subtaskId1 = taskManager.addSubtask(new Subtask("Name1", "Description1", epic1.getId()));
-        Subtask subtask1 = taskManager.getSubtaskById(subtaskId1);
-        String subtaskJson1 = gson.toJson(subtask1);
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/subtasks");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-
-        Subtask createdSubtask = gson.fromJson(response.body(), Subtask.class);
-        int subtaskId = createdSubtask.getId();
-        URI getUrl = URI.create("http://localhost:8080/subtasks/" + subtaskId);
+        URI getUrl = URI.create("http://localhost:8080/subtasks/" + subtaskId1);
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(getUrl)
                 .DELETE()

@@ -95,43 +95,25 @@ public class HttpTaskManagerTasksTest extends HttpBaseTest {
 
     @Test
     void shouldGetAllTasks() throws IOException, InterruptedException {
-        Task task1 = new Task("Name1", "Description1");
-        Task task2 = new Task("Name2", "Description2");
-
-        String taskJson1 = gson.toJson(task1);
-        String taskJson2 = gson.toJson(task2);
+        Task task1 = taskManager.addTask(new Task("Name1", "Description1"));
+        Task task2 = taskManager.addTask(new Task("Name2", "Description2"));
 
         HttpClient httpClient = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-        HttpRequest request2 = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson2))
-                .build();
-
-        HttpResponse<String> response2 = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response2.statusCode());
 
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
                 .build();
 
-        HttpResponse<String> response3 = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response3.statusCode());
+        HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
         Type listType = new TypeToken<List<Task>>() {
         }.getType();
-        List<Task> tasksFromServer = gson.fromJson(response3.body(), listType);
 
+        List<Task> tasksFromServer = gson.fromJson(getResponse.body(), listType);
+
+        assertEquals(200, getResponse.statusCode());
         assertNotNull(tasksFromServer, "Список задач не должен быть null");
         assertEquals(2, tasksFromServer.size(), "Количество задач некорректно");
         assertEquals("Name1", tasksFromServer.get(0).getName());
@@ -141,30 +123,18 @@ public class HttpTaskManagerTasksTest extends HttpBaseTest {
     @Test
     void shouldGetTaskById() throws IOException, InterruptedException {
         Task task1 = taskManager.addTask(new Task("Name1", "Description1"));
-        String taskJson1 = gson.toJson(task1);
+        int taskId = task1.getId();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-
-        Task createdTask = gson.fromJson(response.body(), Task.class);
-        int taskId = createdTask.getId();
         URI getUrl = URI.create("http://localhost:8080/tasks/" + taskId);
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(getUrl)
                 .GET()
                 .build();
 
-        HttpResponse<String> response2 = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response2.statusCode());
+        assertEquals(200, getResponse.statusCode());
     }
 
     @Test
@@ -187,29 +157,18 @@ public class HttpTaskManagerTasksTest extends HttpBaseTest {
     @Test
     void shouldDeleteTaskById() throws IOException, InterruptedException {
         Task task1 = taskManager.addTask(new Task("Name1", "Description1"));
-        String taskJson1 = gson.toJson(task1);
+        int taskId = task1.getId();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks");
+        URI url = URI.create("http://localhost:8080/tasks/" + taskId);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson1))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
-
-        Task createdTask = gson.fromJson(response.body(), Task.class);
-        int taskId = createdTask.getId();
-        URI getUrl = URI.create("http://localhost:8080/tasks/" + taskId);
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(getUrl)
+                .uri(url)
                 .DELETE()
                 .build();
 
-        HttpResponse<String> response2 = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response2.statusCode());
+        assertEquals(200, getResponse.statusCode());
     }
 }
