@@ -104,11 +104,12 @@ public class TaskHandler extends BaseHttpHandler {
 
             if (task.getId() == 0) {
                 taskManager.addTask(task);
-                sendCreated(exchange, gson.toJson(task));
             } else {
                 taskManager.updateTask(task);
-                sendCreated(exchange, gson.toJson(task));
             }
+
+            sendCreated(exchange, gson.toJson(task));
+
         } catch (IllegalArgumentException exception) {
             sendHasInteractions(exchange, exception.getMessage());
         } catch (NotFoundException exception) {

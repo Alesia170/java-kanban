@@ -92,10 +92,10 @@ public class SubtasksHandler extends BaseHttpHandler {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
             Subtask subtask = gson.fromJson(body, Subtask.class);
 
-            if (subtask.getId() != 0 && taskManager.getSubtaskById(subtask.getId()) != null) {
-                taskManager.updateSubtask(subtask);
-            } else {
+            if (subtask.getId() == 0) {
                 taskManager.addSubtask(subtask);
+            } else {
+                taskManager.updateSubtask(subtask);
             }
 
             sendCreated(exchange, gson.toJson(subtask));
