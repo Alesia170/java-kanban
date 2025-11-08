@@ -1,6 +1,7 @@
 package ru.practicum.test;
 
 import org.junit.jupiter.api.Test;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.manager.TaskManager;
 import ru.practicum.tasks.*;
 
@@ -294,9 +295,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         taskManager.removeEpic(epic1.getId());
 
-        assertNull(taskManager.getEpicById(epic1.getId()), "Эпик должен быть удален");
-        assertNull(taskManager.getSubtaskById(subtaskId1), "1 Подзадача эпика должна быть удалена");
-        assertNull(taskManager.getSubtaskById(subtaskId2), "2 Подзадача эпика должна быть удалена");
+        assertThrows(NotFoundException.class, () -> taskManager.getEpicById(epic1.getId()), "Эпик должен быть удален");
+        assertThrows(NotFoundException.class, () -> taskManager.getSubtaskById(subtaskId1), "1 Подзадача эпика должна быть удалена");
+        assertThrows(NotFoundException.class, () -> taskManager.getSubtaskById(subtaskId2), "2 Подзадача эпика должна быть удалена");
     }
 
     @Test
